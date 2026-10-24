@@ -17,7 +17,7 @@ services:
 
   dubbo-provider:
     build:
-      context: ./springboot-dubbo
+      context: .
       dockerfile: Dockerfile
       args:
         SERVICE: provider
@@ -31,7 +31,7 @@ services:
 
   dubbo-consumer:
     build:
-      context: ./springboot-dubbo
+      context: .
       dockerfile: Dockerfile
       args:
         SERVICE: consumer
