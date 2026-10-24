@@ -201,7 +201,33 @@ public class DubboConsumerApplication {
 }
 ```
 
-### 4. 项目启动流程和结构
+### 4. 使用 Docker Compose 启动（推荐）
+
+在项目根目录（含 `docker-compose.yml`）执行：
+
+```bash
+docker compose up -d --build
+```
+
+服务说明：
+
+| 服务 | 端口 | 说明 |
+| --- | --- | --- |
+| zookeeper | 2181 | Dubbo 注册中心 |
+| dubbo-provider | 9011、20880 | 服务提供者 |
+| dubbo-consumer | 9021 | 服务消费者 |
+
+验证 RPC：浏览器或 curl 访问 `http://localhost:9021/hello`，应返回 `Helloworld`。
+
+停止并清理：
+
+```bash
+docker compose down
+```
+
+本地非容器启动仍可使用 `application.properties`（注册中心默认 `127.0.0.1:2181`）；容器内使用 `docker` profile（`application-docker.properties`）。
+
+### 5. 项目启动流程和结构（本地）
 
 #### 1. 启动祖册中心：
 
