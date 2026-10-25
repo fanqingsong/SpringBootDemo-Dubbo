@@ -11,6 +11,8 @@ curl http://localhost:9021/hello
 
 Dubbo Admin：<http://localhost:38080>（用户名 `root`，密码 `root`）。详见下文「Dubbo Admin 控制台」。
 
+Dubbo Monitor：<http://localhost:38081>（Simple Monitor，查看调用次数与耗时统计）。
+
 ---
 
 Dubbo 是一个分布式服务框架，致力于提供高性能和透明化的 RPC 远程服务调用方案，以及 SOA 服务治理方案
@@ -229,6 +231,7 @@ docker compose up -d --build
 | zookeeper | 2181 | Dubbo 注册中心 |
 | dubbo-provider | 9011、20880 | 服务提供者 |
 | dubbo-consumer | 9021 | 服务消费者 |
+| dubbo-monitor | 38081、7070 | Simple Monitor（调用统计；Web 端口映射为 38081） |
 | dubbo-admin | 38080 | 服务治理控制台（兼容 Dubbo 2.6.x） |
 
 #### Dubbo Admin 控制台
@@ -240,6 +243,18 @@ docker compose up -d --build
 | 密码 | `root` |
 
 登录后可在「服务查询」中查看 `com.dubbo.service.HelloService` 的提供者与消费者。
+
+#### Dubbo Monitor 监控中心
+
+| 项 | 值 |
+| --- | --- |
+| 地址 | <http://localhost:38081> |
+| 说明 | 独立 `dubbo-monitor-simple`，与 Admin 职责不同（侧重 QPS、RT 等统计） |
+
+Provider / Consumer 已配置 `spring.dubbo.monitor.protocol=registry`，通过 Zookeeper 发现 Monitor 并每分钟上报统计。先访问几次 `http://localhost:9021/hello`，再在 Monitor 页面查看 `HelloService` 相关图表。
+
+- 配置：`dubbo-monitor/config/dubbo.properties`；修改后执行 `docker compose restart dubbo-monitor`
+- 运行包位于 `dubbo-monitor/bundle/`（Dubbo Simple Monitor，基于社区预打包发行版）
 
 - 镜像：`swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/apache/dubbo-admin:0.6.0`（华为 SWR 同步；`latest` 未同步，直连 Docker Hub 易卡住）
 - 账号配置：`dubbo-admin/config/application.properties` 中的 `admin.root.user.name` / `admin.root.user.password`；修改后执行 `docker compose restart dubbo-admin`

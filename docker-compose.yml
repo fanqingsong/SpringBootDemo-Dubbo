@@ -23,6 +23,8 @@ services:
     depends_on:
       zookeeper:
         condition: service_healthy
+      dubbo-monitor:
+        condition: service_started
     ports:
       - "9011:9011"
       - "20880:20880"
@@ -35,10 +37,27 @@ services:
     depends_on:
       zookeeper:
         condition: service_healthy
+      dubbo-monitor:
+        condition: service_started
       dubbo-provider:
         condition: service_started
     ports:
       - "9021:9021"
+
+  dubbo-monitor:
+    build:
+      context: .
+      dockerfile: dubbo-monitor/Dockerfile
+    container_name: dubbo-monitor
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    ports:
+      - "38081:8080"
+      - "7070:7070"
+    volumes:
+      - ./dubbo-monitor/config/dubbo.properties:/opt/dubbo-monitor-simple/conf/dubbo.properties:ro
+      - dubbo-monitor-data:/data/monitor
 
   dubbo-admin:
     # 华为 SWR 同步镜像；latest 未同步，固定 0.6.0（兼容 Dubbo 2.6.x）
@@ -51,3 +70,6 @@ services:
       - "38080:38080"
     volumes:
       - ./dubbo-admin/config:/config
+
+volumes:
+  dubbo-monitor-data:
