@@ -18,9 +18,7 @@ services:
   dubbo-provider:
     build:
       context: .
-      dockerfile: Dockerfile
-      args:
-        SERVICE: provider
+      dockerfile: dubbo-provider/Dockerfile
     container_name: dubbo-provider
     depends_on:
       zookeeper:
@@ -32,9 +30,7 @@ services:
   dubbo-consumer:
     build:
       context: .
-      dockerfile: Dockerfile
-      args:
-        SERVICE: consumer
+      dockerfile: dubbo-consumer/Dockerfile
     container_name: dubbo-consumer
     depends_on:
       zookeeper:
@@ -43,3 +39,15 @@ services:
         condition: service_started
     ports:
       - "9021:9021"
+
+  dubbo-admin:
+    # 华为 SWR 同步镜像；latest 未同步，固定 0.6.0（兼容 Dubbo 2.6.x）
+    image: swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/apache/dubbo-admin:0.6.0
+    container_name: dubbo-admin
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    ports:
+      - "38080:38080"
+    volumes:
+      - ./dubbo-admin/config:/config
